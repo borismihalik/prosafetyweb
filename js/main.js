@@ -3,7 +3,7 @@
 /* E-mail, na ktorý chodia správy z kontaktného formulára (služba FormSubmit.co).
    Pri prvej odoslanej správe príde na túto adresu e-mail s tlačidlom „Activate Form“ –
    po jeho potvrdení začnú správy chodiť. */
-var FORM_EMAIL = 'info@prosafety.sk';
+var FORM_EMAIL = 'boris.mihalik@gmail.com';
 
 (function () {
   // ---------- Otvorenie webu priamo z disku (file://) ----------
