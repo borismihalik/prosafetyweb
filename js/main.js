@@ -98,11 +98,20 @@ var FORM_EMAIL = 'boris.mihalik@gmail.com';
         if (res.ok && (res.j.success === true || res.j.success === 'true')) {
           form.reset();
           setStatus('ok', '<b>Ďakujeme, správa bola odoslaná.</b> Ozveme sa vám čo najskôr.');
-        } else { throw new Error(res.j && res.j.message); }
+          return;
+        }
+        var msg = (res.j && res.j.message) ? String(res.j.message) : '';
+        if (/activat/i.test(msg)) {
+          // Prvé odoslanie: FormSubmit čaká na potvrdenie adresy príjemcu
+          setStatus('bad', '<b>Formulár ešte nie je aktivovaný.</b> Na adresu ' + FORM_EMAIL + ' prišiel e-mail od FormSubmit s tlačidlom „Activate Form“. Po jeho potvrdení odošlite správu znova.');
+          return;
+        }
+        var e = new Error(msg); e.detail = msg; throw e;
       })
-      .catch(function () {
+      .catch(function (err) {
         var body = encodeURIComponent('Meno: ' + data['Meno'] + '\nE-mail: ' + data['E-mail'] + '\n\n' + data['Správa']);
-        setStatus('bad', 'Správu sa nepodarilo odoslať. Skúste to znova alebo nám napíšte priamo na <a href="mailto:info@prosafety.sk?subject=' + encodeURIComponent(data['_subject']) + '&body=' + body + '">info@prosafety.sk</a>.');
+        var detail = err && err.detail ? '<br><small>Odpoveď služby: ' + String(err.detail).replace(/</g, '&lt;') + '</small>' : '';
+        setStatus('bad', 'Správu sa nepodarilo odoslať. Skúste to znova alebo nám napíšte priamo na <a href="mailto:info@prosafety.sk?subject=' + encodeURIComponent(data['_subject']) + '&body=' + body + '">info@prosafety.sk</a>.' + detail);
       })
       .finally(function () { btn.disabled = false; btn.textContent = 'Odoslať správu'; });
   });
